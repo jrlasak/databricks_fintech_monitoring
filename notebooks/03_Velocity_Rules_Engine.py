@@ -230,17 +230,12 @@ generate_batch(n_files=3, records_per_file=100)
 #
 # for s in spark.streams.active:
 #     s.awaitTermination()
-#
-# # 👀 Verify: see which transactions were flagged as suspicious
-# alerts_result = spark.read.table(TABLE_SILVER_ALERTS)
-# print(f"✅ {TABLE_SILVER_ALERTS}: {alerts_result.count()} flagged transactions")
-# display(alerts_result.limit(10))
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: A fraction of your total Silver transactions  -  only the ones with `risk_score > 70` (typically 5-15% depending on data distribution).
 # MAGIC - **Key columns**: All Silver transaction columns PLUS `risk_score` and `is_alert`.
 # MAGIC - **`risk_score`**: Every row should be > 70 (that's your filter). Look at the values  -  a score of 75 means 3 risk factors triggered, while 90 means nearly all factors fired.
@@ -248,6 +243,13 @@ generate_batch(n_files=3, records_per_file=100)
 # MAGIC - **What triggered the alert?**: Cross-reference `is_geo_mismatch`, `amount > 800`, `merchant_risk_score > 80`, and `channel = 'mobile'` to understand WHY each transaction was flagged.
 # MAGIC
 # MAGIC **What this means**: You've just built a real-time fraud detection pipeline. In production, this alerts table would feed an ops dashboard where analysts review flagged transactions within minutes  -  not the next morning. The composite scoring approach reduces false positives compared to single-rule systems (a geo mismatch alone isn't enough to trigger an alert).
+
+# COMMAND ----------
+
+# 🔍 Verification query
+alerts_result = spark.read.table(TABLE_SILVER_ALERTS)
+print(f"✅ {TABLE_SILVER_ALERTS}: {alerts_result.count()} flagged transactions")
+display(alerts_result.limit(10))
 
 # COMMAND ----------
 

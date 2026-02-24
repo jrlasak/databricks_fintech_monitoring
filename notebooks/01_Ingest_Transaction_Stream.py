@@ -237,23 +237,25 @@ generate_batch(n_files=2, records_per_file=50)
 # # Wait for the stream to finish before proceeding
 # for s in spark.streams.active:
 #     s.awaitTermination()
-#
-# # 👀 Verify: inspect the Bronze table you just created
-# bronze_result = spark.read.table(TABLE_BRONZE_TRANSACTIONS)
-# print(f"✅ {TABLE_BRONZE_TRANSACTIONS}: {bronze_result.count()} rows")
-# display(bronze_result.limit(10))
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: ~200+ rows (depends on how many batches you generated  -  each `generate_batch` call adds ~100 transactions).
 # MAGIC - **Key columns**: `txn_id`, `customer_id`, `merchant_id`, `amount`, `currency`, `timestamp`, `_rescued_data`, `_ingestion_timestamp`.
 # MAGIC - **`_rescued_data`**: Most rows should show `null` here  -  meaning they parsed cleanly. Any non-null values indicate records with unexpected fields.
 # MAGIC - **`_ingestion_timestamp`**: Every row should have a timestamp from when YOU ran the pipeline  -  this is your lineage metadata for auditing.
 # MAGIC
 # MAGIC **What this means**: Your Bronze layer is now a faithful, append-only record of every payment event  -  including retries that were deduplicated and malformed records that were captured (not dropped). This is the foundation every downstream layer depends on.
+
+# COMMAND ----------
+
+# 🔍 Verification query
+bronze_result = spark.read.table(TABLE_BRONZE_TRANSACTIONS)
+print(f"✅ {TABLE_BRONZE_TRANSACTIONS}: {bronze_result.count()} rows")
+display(bronze_result.limit(10))
 
 # COMMAND ----------
 

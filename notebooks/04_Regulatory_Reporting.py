@@ -115,23 +115,25 @@ from pyspark.sql.types import *
 #   .write.mode("overwrite")
 #   .clusterBy("report_date", "category_code")
 #   .saveAsTable(TABLE_GOLD_DAILY_SUMMARY))
-#
-# # 👀 Verify: inspect the daily summary report
-# daily_result = spark.read.table(TABLE_GOLD_DAILY_SUMMARY)
-# print(f"✅ {TABLE_GOLD_DAILY_SUMMARY}: {daily_result.count()} rows")
-# display(daily_result)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: One row per `(report_date, category_code)` combination  -  far fewer than Silver (this is the power of Gold aggregation).
 # MAGIC - **Key columns**: `report_date`, `category_code`, `total_txns`, `total_amount`, `avg_amount`.
 # MAGIC - **`category_code`**: Merchant categories like `5411` (grocery), `5812` (restaurants), `4789` (transportation). Each category has its own daily summary.
 # MAGIC - **`avg_amount`**: Compare across categories  -  restaurant transactions typically average lower than electronics purchases.
 # MAGIC
 # MAGIC **What this means**: This is the table a compliance dashboard queries. Instead of scanning millions of Silver rows, analysts get pre-aggregated daily breakdowns with sub-second response times thanks to Liquid Clustering on `report_date` and `category_code`. This is why Gold layers exist  -  to serve specific business consumers efficiently.
+
+# COMMAND ----------
+
+# 🔍 Verification query
+daily_result = spark.read.table(TABLE_GOLD_DAILY_SUMMARY)
+print(f"✅ {TABLE_GOLD_DAILY_SUMMARY}: {daily_result.count()} rows")
+display(daily_result)
 
 # COMMAND ----------
 
@@ -191,17 +193,12 @@ from pyspark.sql.types import *
 # (sar_prefill_df
 #   .write.mode("overwrite")
 #   .saveAsTable(TABLE_GOLD_SAR_PREFILL))
-#
-# # 👀 Verify: review the SAR pre-fill dataset for compliance
-# sar_result = spark.read.table(TABLE_GOLD_SAR_PREFILL)
-# print(f"✅ {TABLE_GOLD_SAR_PREFILL}: {sar_result.count()} customers flagged")
-# display(sar_result)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: One row per flagged customer  -  significantly fewer than the alerts table (multiple alerts per customer are rolled up).
 # MAGIC - **Key columns**: `customer_id`, `total_incidents`, `total_suspicious_amount`, `max_risk_score`.
 # MAGIC - **`total_incidents`**: Customers with multiple incidents are higher priority for investigation. A customer with 5+ incidents in one day is very different from one with a single borderline alert.
@@ -209,6 +206,13 @@ from pyspark.sql.types import *
 # MAGIC - **`max_risk_score`**: The worst single transaction score for that customer  -  indicates peak severity.
 # MAGIC
 # MAGIC **What this means**: You've just built the dataset that saves compliance analysts hours of manual work. Instead of querying raw alerts and aggregating in spreadsheets, they get a pre-built report showing exactly which customers need Suspicious Activity Reports filed. This is the final output of your entire pipeline  -  from raw JSON files to regulatory action.
+
+# COMMAND ----------
+
+# 🔍 Verification query
+sar_result = spark.read.table(TABLE_GOLD_SAR_PREFILL)
+print(f"✅ {TABLE_GOLD_SAR_PREFILL}: {sar_result.count()} customers flagged")
+display(sar_result)
 
 # COMMAND ----------
 

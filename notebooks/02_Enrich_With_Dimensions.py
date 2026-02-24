@@ -206,22 +206,24 @@ generate_batch(n_files=2, records_per_file=100)
 #   .whenMatchedUpdateAll()
 #   .whenNotMatchedInsertAll()
 #   .execute())
-#
-# # 👀 Verify: inspect the updated merchants table
-# merchants_result = spark.read.table(TABLE_SILVER_MERCHANTS)
-# print(f"✅ {TABLE_SILVER_MERCHANTS}: {merchants_result.count()} merchants")
-# display(merchants_result.limit(10))
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: ~5,000 merchants.
 # MAGIC - **Key columns**: `merchant_id`, `name`, `category_code`, `country`, `risk_score`, `onboarded_at`.
 # MAGIC - **`risk_score`**: Values between 0-100. Merchants with scores > 80 are considered "high risk"  -  these will factor into fraud detection in Notebook 03.
 # MAGIC
 # MAGIC **What this means**: Your Silver merchants table is now a live, updateable dimension. When new merchants onboard or risk scores change, the MERGE operation handles both inserts and updates in a single atomic transaction  -  no full table rewrites needed.
+
+# COMMAND ----------
+
+# 🔍 Verification query
+merchants_result = spark.read.table(TABLE_SILVER_MERCHANTS)
+print(f"✅ {TABLE_SILVER_MERCHANTS}: {merchants_result.count()} merchants")
+display(merchants_result.limit(10))
 
 # COMMAND ----------
 
@@ -270,17 +272,12 @@ generate_batch(n_files=2, records_per_file=100)
 #
 # for s in spark.streams.active:
 #     s.awaitTermination()
-#
-# # 👀 Verify: inspect the enriched Silver transactions
-# silver_result = spark.read.table(TABLE_SILVER_TRANSACTIONS)
-# print(f"✅ {TABLE_SILVER_TRANSACTIONS}: {silver_result.count()} rows")
-# display(silver_result.limit(10))
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### 👀 What You Should See
-# MAGIC After running the solution above, your verification query should show:
+# MAGIC ### 🔍 Verify Your Results
+# MAGIC Run the cell below to inspect your output. You should see:
 # MAGIC - **Row count**: Same as your Bronze table (enrichment doesn't drop rows thanks to left joins).
 # MAGIC - **New columns**: `customer_name`, `customer_country`, `risk_tier`, `merchant_name`, `merchant_country`, `merchant_risk_score`, `is_geo_mismatch`.
 # MAGIC - **`is_geo_mismatch`**: Some rows should show `true`  -  meaning the customer's registered country doesn't match the IP country of the transaction. These are potential fraud indicators.
@@ -288,6 +285,13 @@ generate_batch(n_files=2, records_per_file=100)
 # MAGIC - **`currency`**: Should all be uppercase (e.g., `USD`, `EUR`) after standardization.
 # MAGIC
 # MAGIC **What this means**: Your Silver layer now has business-ready, enriched transactions. Every row carries the context needed for fraud detection  -  who the customer is, who the merchant is, and whether the geography looks suspicious. This is the dataset the rules engine in Notebook 03 will score.
+
+# COMMAND ----------
+
+# 🔍 Verification query
+silver_result = spark.read.table(TABLE_SILVER_TRANSACTIONS)
+print(f"✅ {TABLE_SILVER_TRANSACTIONS}: {silver_result.count()} rows")
+display(silver_result.limit(10))
 
 # COMMAND ----------
 
