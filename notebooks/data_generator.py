@@ -93,7 +93,17 @@ def generate_batch(n_files=1, records_per_file=100, start_timestamp=None):
         
         # Write batch to JSON
         txns_final.coalesce(1).write.mode("append").json(TRANSACTIONS_RAW_PATH)
-        print(f"✅ Generated transaction batch with {txns_final.count()} rows")
+        
+        # Inject malformed records (for _rescued_data testing)
+        malformed_records = [
+            '{"txn_id": "MALF_' + str(batch_id) + '_1", "amount": "one hundred", "timestamp": "invalid_date"}',
+            '{"txn_id": "MALF_' + str(batch_id) + '_2", "customer_id": 12345, "broken_json: true',
+            '{"txn_id": "MALF_' + str(batch_id) + '_3", "currency": "USD", "amount": 50.0, "unexpected_nested": {"foo": "bar"}}'
+        ]
+        malformed_df = spark.createDataFrame([(r,) for r in malformed_records], ["value"])
+        malformed_df.coalesce(1).write.mode("append").text(TRANSACTIONS_RAW_PATH)
+
+        print(f"✅ Generated transaction batch with {txns_final.count()} valid rows and {len(malformed_records)} malformed records")
 
 # COMMAND ----------
 
