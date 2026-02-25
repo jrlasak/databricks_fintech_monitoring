@@ -2,7 +2,11 @@
 
 > Independent educational resource; not endorsed by Databricks, Inc. "Databricks" and "Delta Lake" are trademarks of their respective owners.
 
-## Connect with me:
+## Author
+
+<img src="https://dataengineer.wiki/download/profilepicture.jpg" alt="Jakub Lasak" width="80" style="border-radius: 50%;" />
+
+**Jakub Lasak** — Helping you interview like seniors, execute like seniors, and think like seniors.
 
 - 🔗 [LinkedIn](https://www.linkedin.com/in/jrlasak/) - Databricks projects and tips
 - 📬 [Substack Newsletter](https://dataengineer.wiki/substack) - Exclusive content for Data Engineers
@@ -68,9 +72,11 @@ Go to **User Settings → Developer → AI-powered code completion** and turn **
    - The repo will appear as a folder in your workspace, allowing you to edit, run notebooks, and manage files directly from Databricks.
    - For more details, see the official Databricks documentation: [Repos in Databricks](https://docs.databricks.com/repos/index.html).
 
-3. Open the `notebooks/` folder and run `00_Setup_Environment` to create the Unity Catalog infrastructure and generate data.
-4. Follow the numbered notebooks (01 to 04) to build the pipeline.
-5. Each exercise includes a **STUDENT EXERCISE** area for your code and a commented-out **SOLUTION** for verification.
+3. Open the `notebooks/` folder and run `00_Setup_Environment.py` to create the Unity Catalog infrastructure and generate data.
+
+4. Follow the numbered notebooks (`01` to `04`) to build the pipeline.
+
+   Each exercise includes a **STUDENT EXERCISE** area for your code and a commented-out **SOLUTION** for verification.
 
 ---
 
